@@ -6,3 +6,18 @@
 .formRow {
   margin-bottom: 0.5em;
 }
+
+
+@media (max-width: 640px) {
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .small {
+    font-size: 1rem;
+  }
+  
+  .form {
+    font-size: 1rem;
+  }
+}
