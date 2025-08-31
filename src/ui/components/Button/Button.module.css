@@ -25,7 +25,9 @@
 }
 
 .secondary {
-  background-color: var(--color-brand);
+  border: 2px var(--color-brand) solid;
+  background: white;
+  color: var(--color-brand);
 }
 
 /** TODO: Create separate styles for .primary and .secondary variants of this button:
