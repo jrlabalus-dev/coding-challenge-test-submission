@@ -2,3 +2,9 @@
   color: red;
   padding: 0.5em 0;
 }
+
+.centerWrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

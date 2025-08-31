@@ -2,6 +2,7 @@ import { ButtonType, ButtonVariant } from "@/types";
 import React, { FunctionComponent } from "react";
 
 import $ from "./Button.module.css";
+import {  IconLoader2 } from "@tabler/icons-react";
 
 interface ButtonProps {
   onClick?: () => void;
@@ -28,7 +29,7 @@ const Button: FunctionComponent<ButtonProps> = ({
       type={type}
       onClick={onClick}
     >
-      {children}
+      {loading &&<IconLoader2 className={$.loader} />} {children}
     </button>
   );
 };

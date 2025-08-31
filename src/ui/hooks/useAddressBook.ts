@@ -20,6 +20,10 @@ export default function useAddressBook() {
     databaseService.setItem("addresses", addresses);
   }, [addresses]);
 
+  React.useEffect(() => {
+    updateDatabase();
+  }, [addresses]);
+
   return {
     /** Add address to the redux store */
     addAddress: (address: Address) => {
