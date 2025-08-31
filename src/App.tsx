@@ -95,7 +95,7 @@ function App() {
   return (
     <main>
       <Section>
-        <h1>
+        <h1 className={styles.title}>
           Create your own address book!
           <br />
           <small>
@@ -103,7 +103,7 @@ function App() {
           </small>
         </h1>
         {/* TODO: Create generic <Form /> component to display form rows, legend and a submit button  */}
-        <form onSubmit={handleAddressSubmit}>
+        <form className={styles.form} onSubmit={handleAddressSubmit}>
           <fieldset>
             <legend>🏠 Find an address</legend>
             <div className={styles.formRow}>
