@@ -1,34 +1,45 @@
-import React, { FunctionComponent } from 'react';
+import React, { type InputHTMLAttributes } from 'react';
 
 import Button from '../Button/Button';
 import InputText from '../InputText/InputText';
 import $ from './Form.module.css';
 
-interface FormEntry {
+export type ValidatorFn<T> = (value: T) => string | undefined;
+
+interface FormEntry <T = string> {
   name: string;
-  placeholder: string;
+  placeholder?: string;
   // TODO: Defined a suitable type for extra props
   // This type should cover all different of attribute types
-  extraProps: any;
+  validators?: ValidatorFn<T>[];
+  extraProps?: InputHTMLAttributes<HTMLInputElement>;
 }
 
-interface FormProps {
+interface FormProps<FormShape> {
   label: string;
-  loading: boolean;
+  loading?: boolean;
   formEntries: FormEntry[];
-  onFormSubmit: () => void;
+  onFormSubmit: (e: React.ChangeEvent<HTMLFormElement>) => void;
   submitText: string;
+  values: FormShape;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  errors?: Partial<FormShape>;
 }
 
-const Form: FunctionComponent<FormProps> = ({
+const Form = <FormShape extends Record<string, any>>({
   label,
   loading,
   formEntries,
   onFormSubmit,
-  submitText
-}) => {
+  submitText,
+  values,
+  onChange,
+  errors
+}: FormProps<FormShape>) =>  {
+
+  console.log("inside", errors)
   return (
-    <form onSubmit={onFormSubmit}>
+    <form className={$.form} onSubmit={onFormSubmit}>
       <fieldset>
         <legend>{label}</legend>
         {formEntries.map(({ name, placeholder, extraProps }, index) => (
@@ -36,9 +47,12 @@ const Form: FunctionComponent<FormProps> = ({
             <InputText
               key={`${name}-${index}`}
               name={name}
-              placeholder={placeholder}
+              placeholder={placeholder ?? ''}
               {...extraProps}
+              value={values[name]}
+              onChange={onChange}
             />
+            {errors?.[name] &&<span className={$.fieldError}> {errors[name]} </span>}
           </div>
         ))}
 
