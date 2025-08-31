@@ -7,6 +7,12 @@
   margin-bottom: 0.5em;
 }
 
+.form {
+  display: flex;
+  justify-content: center;
+}
+
+
 
 @media (max-width: 640px) {
   .title {
@@ -19,5 +25,19 @@
   
   .form {
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .title {
+    font-size: 1rem;
+  }
+
+  .small {
+    font-size: 0.8rem;
+  }
+  
+  .form {
+    font-size: 0.8rem;
   }
 }
