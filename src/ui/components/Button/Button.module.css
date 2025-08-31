@@ -31,7 +31,7 @@
 
 .secondary {
   border: 2px var(--color-brand) solid;
-  background: white;
+  background: none;
   color: var(--color-brand);
 }
 

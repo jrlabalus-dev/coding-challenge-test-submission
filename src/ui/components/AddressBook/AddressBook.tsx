@@ -20,7 +20,7 @@ const AddressBook = () => {
 
   return (
     <section className={$.addressBook}>
-      <h2>{addressBookTitle}</h2>
+      <h2 className={$.title}>{addressBookTitle}</h2>
       {!loading && (
         <>
           {addresses.length === 0 && <p>No addresses found, try add one 😉</p>}

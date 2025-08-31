@@ -16,13 +16,6 @@
 }
 
 @media (max-width: 640px) {
-  .title {
-    font-size: 1.25rem;
-  }
-
-  .small {
-    font-size: 1rem;
-  }
   
   .form {
     font-size: 1rem;
@@ -30,41 +23,6 @@
 }
 
 @media (max-width: 375px) {
-  .title {
-    font-size: 1rem;
-  }
-
-  .small {
-    font-size: 0.8rem;
-  }
-  
-  .form {
-    font-size: 0.8rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .title {
-    font-size: 1.25rem;
-  }
-
-  .small {
-    font-size: 1rem;
-  }
-  
-  .form {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 375px) {
-  .title {
-    font-size: 1rem;
-  }
-
-  .small {
-    font-size: 0.8rem;
-  }
   
   .form {
     font-size: 0.8rem;

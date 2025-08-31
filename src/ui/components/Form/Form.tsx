@@ -4,7 +4,6 @@ import Button from '../Button/Button';
 import InputText from '../InputText/InputText';
 import $ from './Form.module.css';
 
-export type ValidatorFn<T> = (value: T) => string | undefined;
 
 interface FormEntry <T = string> {
   name: string;

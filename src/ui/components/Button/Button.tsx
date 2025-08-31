@@ -29,7 +29,7 @@ const Button: FunctionComponent<ButtonProps> = ({
       type={type}
       onClick={onClick}
     >
-      {loading &&<IconLoader2 className={$.loader} />} {children}
+      {loading &&<IconLoader2 className={$.loader} data-testid="loading-spinner" />} {children}
     </button>
   );
 };
