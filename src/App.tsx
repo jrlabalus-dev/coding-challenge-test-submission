@@ -9,23 +9,13 @@ import Section from "@/components/Section/Section";
 import useAddressBook from "@/hooks/useAddressBook";
 
 import styles from "./App.module.css";
-import { Address as AddressType } from "./types";
+import { AddressForm, Address as AddressType, PersonForm } from "./types";
 import useForm from "@/hooks/useForm";
-import Form, { ValidatorFn } from "@/components/Form/Form";
+import Form from "@/components/Form/Form";
 import ResponseError from "@/components/ResponseError/ResponseError";
 import { AddressModel } from "./core/models/address";
+import { required } from "./utils/validations";
 
-
-interface AddressForm {
-  postCode: string;
-  houseNumber: string;
-  selectedAddress?: number;
-}
-
-interface PersonForm {
-  firstName: string;
-  lastName: string;
-}
 
 async function getAddresses (postCode: string, streetnumber: string) {
   const params = new URLSearchParams({ postcode: postCode, streetnumber })
@@ -41,47 +31,27 @@ async function getAddresses (postCode: string, streetnumber: string) {
   return data;
 }
 
-const required: ValidatorFn<string> = (value) => !value.trim() ? "Field is required.": undefined;
+
 
 const addressFormFields = [
   {
     name: "postCode",
-    validators: [
-      required,
-    ],
-    extraProps: {
-      placeholder: "Post Code"
-    }
+    placeholder: "Post Code"
   },
   {
     name: "houseNumber",
-    validators: [
-      required,
-    ],
-    extraProps: {
-      placeholder: "House Number"
-    }
+    placeholder: "House Number"
   },
 ]
 
 const personFormFields = [
   {
     name: "firstName",
-    validators: [
-      required,
-    ],
-    extraProps: {
-      placeholder: "First name"
-    }
+    placeholder: "First name"
   },
   {
     name: "lastName",
-    validators: [
-      required,
-    ],
-    extraProps: {
-      placeholder: "Last name"
-    }
+    placeholder: "Last name"
   },
 ]
 
@@ -111,13 +81,14 @@ function App() {
    */
 
   const [error, setError] = React.useState<undefined | string>(undefined);
+
+  //Ideally I would like to use react-query to handle this
   const [addresses, setAddresses] = React.useState<AddressType[]>([]);
   const [addressesLoading, setAddressesLoading] = React.useState<boolean>(false);
   /**
    * Redux actions
    */
   const { addAddress } = useAddressBook();
-
   /** TODO: Fetch addresses based on houseNumber and postCode using the local BE api
    * - Example URL of API: ${process.env.NEXT_PUBLIC_URL}/api/getAddresses?postcode=1345&streetnumber=350
    * - Ensure you provide a BASE URL for api endpoint for grading purposes!
@@ -157,7 +128,9 @@ function App() {
       return;
     }
 
-    const foundAddress = addresses[selectedAddress];
+    const foundAddress =  addresses.find(
+      (address) => address.id === selectedAddress.toString() 
+    );
 
     if (!foundAddress) {
       setError("Selected address not found");
@@ -246,7 +219,9 @@ function App() {
         On Click, it must clear all form fields, remove all search results and clear all prior
         error messages
         */}
-        <Button variant="secondary" onClick={handleReset}>Clear All Fields</Button>
+        <div className={styles.centerWrapper}>
+          <Button variant="secondary" onClick={handleReset}>Clear All Fields</Button>
+        </div>
       </Section>
 
       <Section variant="dark">

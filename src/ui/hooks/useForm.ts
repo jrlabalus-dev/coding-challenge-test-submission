@@ -1,5 +1,5 @@
-import { ValidatorFn } from "@/components/Form/Form";
 import { ChangeEvent, type Reducer, useReducer } from "react";
+import { ValidatorFn } from "src/utils/validations";
 
 interface ActionType<FormType> {
   type: "VALUE_CHANGE" | "CHANGE_WHOLE";
