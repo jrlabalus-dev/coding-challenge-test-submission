@@ -11,7 +11,6 @@ interface FormEntry <T = string> {
   placeholder?: string;
   // TODO: Defined a suitable type for extra props
   // This type should cover all different of attribute types
-  validators?: ValidatorFn<T>[];
   extraProps?: InputHTMLAttributes<HTMLInputElement>;
 }
 
