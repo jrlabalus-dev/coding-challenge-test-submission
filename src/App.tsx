@@ -10,6 +10,15 @@ import useAddressBook from "@/hooks/useAddressBook";
 
 import styles from "./App.module.css";
 import { Address as AddressType } from "./types";
+import useForm from "@/hooks/useForm";
+
+interface AddressForm {
+  postCode: string;
+  houseNumber: string;
+  firstName: string;
+  lastName: string;
+  selectedAddress: string;
+}
 
 function App() {
   /**
@@ -92,6 +101,14 @@ function App() {
     addAddress({ ...foundAddress, firstName, lastName });
   };
 
+  const { values, handleChange } = useForm<AddressForm>({
+    postCode: "test",
+    houseNumber: "test¸1",
+    firstName: "test2",
+    lastName: "test3",
+    selectedAddress: "test4",
+  });
+
   return (
     <main>
       <Section>
@@ -109,16 +126,16 @@ function App() {
             <div className={styles.formRow}>
               <InputText
                 name="postCode"
-                onChange={handlePostCodeChange}
+                onChange={handleChange}
                 placeholder="Post Code"
-                value={postCode}
+                value={values.postCode}
               />
             </div>
             <div className={styles.formRow}>
               <InputText
                 name="houseNumber"
-                onChange={handleHouseNumberChange}
-                value={houseNumber}
+                onChange={handleChange}
+                value={values.houseNumber}
                 placeholder="House number"
               />
             </div>
@@ -132,7 +149,7 @@ function App() {
                 name="selectedAddress"
                 id={address.id}
                 key={address.id}
-                onChange={handleSelectedAddressChange}
+                onChange={handleChange}
               >
                 <Address {...address} />
               </Radio>
@@ -147,16 +164,16 @@ function App() {
                 <InputText
                   name="firstName"
                   placeholder="First name"
-                  onChange={handleFirstNameChange}
-                  value={firstName}
+                  onChange={handleChange}
+                  value={values.firstName}
                 />
               </div>
               <div className={styles.formRow}>
                 <InputText
                   name="lastName"
                   placeholder="Last name"
-                  onChange={handleLastNameChange}
-                  value={lastName}
+                  onChange={handleChange}
+                  value={values.lastName}
                 />
               </div>
               <Button type="submit">Add to addressbook</Button>
