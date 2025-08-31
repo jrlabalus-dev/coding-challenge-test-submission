@@ -17,7 +17,7 @@ import { AddressModel } from "./core/models/address";
 import { required } from "./utils/validations";
 
 
-async function getAddresses (postCode: string, streetnumber: string) {
+export async function getAddresses (postCode: string, streetnumber: string) {
   const params = new URLSearchParams({ postcode: postCode, streetnumber })
   const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/getAddresses?${params.toString()}`);
   
@@ -30,8 +30,6 @@ async function getAddresses (postCode: string, streetnumber: string) {
   
   return data;
 }
-
-
 
 const addressFormFields = [
   {

@@ -28,6 +28,7 @@ const Button: FunctionComponent<ButtonProps> = ({
       className={`${$.button} ${ variant === 'secondary' ? $.secondary : $.primary  }`}
       type={type}
       onClick={onClick}
+      disabled={loading}
     >
       {loading &&<IconLoader2 className={$.loader} data-testid="loading-spinner" />} {children}
     </button>
