@@ -12,6 +12,9 @@ import styles from "./App.module.css";
 import { Address as AddressType } from "./types";
 import useForm from "@/hooks/useForm";
 import Form, { ValidatorFn } from "@/components/Form/Form";
+import ResponseError from "@/components/ResponseError/ResponseError";
+import { AddressModel } from "./core/models/address";
+
 
 interface AddressForm {
   postCode: string;
@@ -25,19 +28,17 @@ interface PersonForm {
 }
 
 async function getAddresses (postCode: string, streetnumber: string) {
-  if (streetnumber && postCode) {
-    const params = new URLSearchParams({ postcode: postCode, streetnumber })
-    const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/getAddresses?${params.toString()}`);
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.errormessage || "Failed to get addresses");
-    }
-    
-    const data = await response.json();
-
-    return data;
+  const params = new URLSearchParams({ postcode: postCode, streetnumber })
+  const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/getAddresses?${params.toString()}`);
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.errormessage || "Failed to get addresses");
   }
+  
+  const data = await response.json();
+  
+  return data;
 }
 
 const required: ValidatorFn<string> = (value) => !value.trim() ? "Field is required.": undefined;
@@ -111,6 +112,7 @@ function App() {
 
   const [error, setError] = React.useState<undefined | string>(undefined);
   const [addresses, setAddresses] = React.useState<AddressType[]>([]);
+  const [addressesLoading, setAddressesLoading] = React.useState<boolean>(false);
   /**
    * Redux actions
    */
@@ -125,15 +127,20 @@ function App() {
    * - Ensure to clear previous search results on each click
    * - Bonus: Add a loading state in the UI while fetching addresses
    */
-  const handleAddressSubmit = async (form) => {
+  const handleAddressSubmit = async (form: AddressForm) => {
+    setAddressesLoading(true)
     try {
       const addressesData = await getAddresses(form.postCode, form.houseNumber);
-      setAddresses(addressesData.details);
-    } catch(e) {
-      setError(e.errormessage);
-
-      console.log('test', e.errormessage)
+      setAddresses(addressesData?.details.map((address: AddressModel) => ({
+        ...address,
+        id: JSON.stringify(address), 
+      })));
+      setError(undefined);
+    } catch(e: unknown) {
+      setError((e as {message: string}).message);
       setAddresses([]);
+    } finally {
+      setAddressesLoading(false);
     }
   };
 
@@ -141,7 +148,7 @@ function App() {
    * Use the following error message setError("First name and last name fields mandatory!")
    */
 
-  const handlePersonSubmit = ({ firstName, lastName}) => {
+  const handlePersonSubmit = ({ firstName, lastName}: PersonForm) => {
 
     if (!selectedAddress || !addresses?.length) {
       setError(
@@ -177,7 +184,12 @@ function App() {
     selectedAddress
   } = addressForm.values;
 
-console.log('addressForm.errors', addressForm.errors)
+  const handleReset = () => {
+    addressForm.resetForm();
+    personForm.resetForm();
+    setError(undefined);
+    setAddresses([]);
+  }
 
   return (
     <main>
@@ -197,14 +209,15 @@ console.log('addressForm.errors', addressForm.errors)
           submitText="Find" 
           label="🏠 Find an address" 
           errors={addressForm.errors}
+          loading={addressesLoading}
         />
         {addresses?.length > 0 &&
-          addresses.map((address, i) => {
+          addresses.map((address) => {
             return (
               <Radio
                 name="selectedAddress"
-                id={i.toString()}
-                key={i.toString()}
+                id={address.id}
+                key={address.id}
                 onChange={addressForm.handleChange}
               >
                 <Address {...address} />
@@ -213,40 +226,19 @@ console.log('addressForm.errors', addressForm.errors)
           })}
         {/* TODO: Create generic <Form /> component to display form rows, legend and a submit button  */}
         {selectedAddress && addresses && (
-          // <form onSubmit={handlePersonSubmit}>
-          //   <fieldset>
-          //     <legend>✏️ Add personal info to address</legend>
-          //     <div className={styles.formRow}>
-          //       <InputText
-          //         name="firstName"
-          //         placeholder="First name"
-          //         onChange={handleChange}
-          //         value={firstName}
-          //       />
-          //     </div>
-          //     <div className={styles.formRow}>
-          //       <InputText
-          //         name="lastName"
-          //         placeholder="Last name"
-          //         onChange={handleChange}
-          //         value={lastName}
-          //       />
-          //     </div>
-          //     <Button type="submit">Add to addressbook</Button>
-          //   </fieldset>
-          // </form>
-
           <Form 
             formEntries={personFormFields} 
             onFormSubmit={personForm.handleSubmit} 
-            values={addresses[selectedAddress]} 
+            values={addressForm.values} 
             onChange={personForm.handleChange} 
-            submitText="Find" label="✏️ Add personal info to address"
+            submitText="Add to addressbook" 
+            label="✏️ Add personal info to address"
+            errors={personForm.errors}
           />
         )}
 
         {/* TODO: Create an <ErrorMessage /> component for displaying an error message */}
-        {error && <div className="error">{error}</div>}
+        <ResponseError error={error}/>
 
         {/* TODO: Add a button to clear all form fields. 
         Button must look different from the default primary button, see design. 
@@ -254,6 +246,7 @@ console.log('addressForm.errors', addressForm.errors)
         On Click, it must clear all form fields, remove all search results and clear all prior
         error messages
         */}
+        <Button variant="secondary" onClick={handleReset}>Clear All Fields</Button>
       </Section>
 
       <Section variant="dark">

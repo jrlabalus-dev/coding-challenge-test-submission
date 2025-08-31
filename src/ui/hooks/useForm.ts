@@ -4,23 +4,23 @@ import { ChangeEvent, type Reducer, useReducer } from "react";
 interface ActionType<FormType> {
   type: "VALUE_CHANGE" | "CHANGE_WHOLE";
   fieldName?: keyof FormType;
-  payload: unknown;
+  payload?: unknown;
 }
 
 interface ErrorActionType<FormType> {
   type: "SINGLE_ERROR_CHANGE" | "ERROR_CHANGE_WHOLE";
   fieldName?: keyof FormType;
-  payload: unknown;
+  payload?: unknown;
 }
 
 function errorFormReducer<FormType>(
   state: Partial<FormType>,
   action: ErrorActionType<FormType>
-): FormType {
+): Partial<FormType> {
   if (action.type === "SINGLE_ERROR_CHANGE") {
     return {
       ...state,
-      [action.fieldName]: action.payload,
+      [action.fieldName as keyof FormType]: action.payload,
     };
   }
 
@@ -38,7 +38,7 @@ function formReducer<FormType>(
   if (action.type === "VALUE_CHANGE") {
     return {
       ...state,
-      [action.fieldName]: action.payload,
+      [action.fieldName as keyof FormType]: action.payload,
     };
   }
 
@@ -51,7 +51,9 @@ function formReducer<FormType>(
 
 export default function useForm<FormType>(
   formShape: FormType,
-  validators: Record<keyof FormType, ValidatorFn<>[]>,
+  validators: {
+    [key in keyof FormType]: Array<ValidatorFn<FormType[key]>>;
+  },
   onSubmit: (form: FormType) => void
 ) {
   const [formstate, dispatchAction] = useReducer<
@@ -66,22 +68,22 @@ export default function useForm<FormType>(
       fieldName: e.target.name as keyof FormType,
       payload: e.target.value,
     };
-
-    console.log(e.target.name);
-    console.log(e.target.value);
     dispatchAction(changeAction);
   };
 
   const validateForm = () => {
-    const errors = Object.keys(validators).reduce((acc, field) => {
-      const fieldErrors = validators[field]
-        .map((validatorFn) => validatorFn(formstate[field]))
-        .join(",");
-      return {
-        ...acc,
-        ...(fieldErrors ? { [field]: fieldErrors } : {}),
-      };
-    }, {});
+    const errors = (Object.keys(validators) as Array<keyof FormType>).reduce(
+      (acc, field) => {
+        const fieldErrors = validators[field]
+          .map((validatorFn) => validatorFn(formstate[field]))
+          .join(",");
+        return {
+          ...acc,
+          ...(fieldErrors ? { [field]: fieldErrors } : {}),
+        };
+      },
+      {}
+    );
 
     dispatchErrorAction({
       type: "ERROR_CHANGE_WHOLE",
@@ -95,6 +97,17 @@ export default function useForm<FormType>(
     onSubmit(formstate);
   };
 
+  const resetForm = () => {
+    dispatchAction({
+      type: "CHANGE_WHOLE",
+      payload: formShape,
+    });
+    dispatchErrorAction({
+      type: "ERROR_CHANGE_WHOLE",
+      payload: {},
+    });
+  };
+
   return {
     initial: formShape,
     values: formstate,
@@ -102,5 +115,6 @@ export default function useForm<FormType>(
     handleChange,
     validateForm,
     handleSubmit,
+    resetForm,
   };
 }

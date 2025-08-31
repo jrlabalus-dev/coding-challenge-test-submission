@@ -37,7 +37,6 @@ const Form = <FormShape extends Record<string, any>>({
   errors
 }: FormProps<FormShape>) =>  {
 
-  console.log("inside", errors)
   return (
     <form className={$.form} onSubmit={onFormSubmit}>
       <fieldset>
